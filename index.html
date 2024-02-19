@@ -9,8 +9,7 @@
 
 <body>
   <div class="container">
-    <ul class="comments" id="comments-id">
-      <!--Разметка реализована и добавляется через JS
+    <ul class="comments" id="comments-id"><!--Разметка реализована и добавляется через JS
       <li class="comment">
         <div class="comment-header">
           <div>Глеб Фокин</div>
@@ -90,7 +89,8 @@
     const likeButtonList = document.querySelectorAll(".like-button")
     console.log(likeButtonList)
     for (const likeButtonElement of likeButtonList) {
-      likeButtonElement.addEventListener("click", () => {
+      likeButtonElement.addEventListener("click", (event) => {
+        event.stopPropagation();
         const index = likeButtonElement.dataset.like
         if (commentArr[index].isLike) {
           commentArr[index].isLike = false
@@ -103,7 +103,7 @@
       })
     }
   };
- 
+
   const renderComments = () => {
     const commentHtml = commentArr
       .map((comment, index) => {
@@ -126,10 +126,20 @@
         </li>`
       })
       .join("");
+
     commentListEl.innerHTML = commentHtml;
     initLikeListener();
-  }
+    const comment = document.querySelectorAll('.comment');
+    const formElementText = document.getElementById('add-form-text-id');
+
+    comment.forEach((el, index) => {
+      el.addEventListener('click', () => {
+        formElementText.value = `>${commentArr[index].text} \n${commentArr[index].name}`
+      });
+    });
+  };
   renderComments();
+
 
   buttonElement.addEventListener("click", () => {
     nameId.classList.remove("error");
@@ -142,9 +152,17 @@
     }
 
     commentArr.push({
-      name: nameId.value,
+      name: nameId.value
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;"),
       date: formattedDateTime,
-      text: commentAdd.value,
+      text: commentAdd.value
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;"),
       quantityLike: 0,
       isLike: false,
     });
@@ -153,12 +171,6 @@
     commentAdd.value = "";
   });
 
-  // const buttonLike = document.getElementById("add-like");
-  // const likesCounter = document.getElementById("likes-counter-id")
-  // buttonLike.addEventListener("click", () => {
-
-  // });
-  
 </script>
 
 </html>
